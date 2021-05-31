@@ -51,6 +51,14 @@ const FormWrapper = () => {
       while (proposition.length < seatCount && position < seats.length) {
         let currentSeat = seats[position];
         let nextSeat = seats[position + 1];
+        if (!nextSeat) {
+          proposition.length = 0;
+          dispatch(setInitialReservation(proposition));
+          window.alert(
+            "Nie znaleziono takiej ilości sąsiednich miejsc, proszę wybrać ręcznie"
+          );
+          return;
+        }
         if (
           nextSeat.reserved === false &&
           nextSeat.cords.y - currentSeat.cords.y === 1 &&
