@@ -1,29 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { updateSeatsAction } from "../../actions";
+import React from "react";
+import { useSelector } from "react-redux";
 import SeatComponent from "./SeatComponent";
 import { Box } from "@chakra-ui/react";
 import "../../styles/seats.css";
 import BottomActionBar from "./BottomActionBar";
-import axios from "axios";
 
 const SeatsWrapper = () => {
-  const [seats, setSeats] = useState([]);
-  const dispatch = useDispatch();
-  const seatCount = useSelector((state) => state.seatCount);
-  const isAdjacent = useSelector((state) => state.isAdjacent);
-  const [reservedSeats, setReservedSeats] = useState([]);
-
-  useEffect(() => {
-    if (seats.length === 0) {
-      axios.get("http://localhost:3005/seats").then((res) => {
-        if (res.status === 200) {
-          dispatch(updateSeatsAction(res.data));
-          setSeats(res.data);
-        }
-      });
-    }
-  }, [seats.length, dispatch]);
+  const seats = useSelector((state) => state.seats.seatBase);
+  const initialReservation = useSelector(
+    (state) => state.initialReservation.reservation
+  );
 
   function findRows() {
     let rowCount = 0;
@@ -60,6 +46,7 @@ const SeatsWrapper = () => {
     }
     return iteratorArray;
   }
+
   // Helper function to determine which seats to render
   function findByCords(x, y) {
     let seat = {};
@@ -73,41 +60,30 @@ const SeatsWrapper = () => {
     return seat;
   }
 
-  const proposedSeats = () => {
-    const proposition = [];
-    console.log(seats);
-    if (isAdjacent) {
-      for (let i = 0; i < seats.length; i++) {
-        console.log(seats[i].cords.x, seats[i].cords.y, proposition.length);
-      }
-    } else {
-      for (let i = 0; i < seats.length; i++) {
-        if (proposition.length === seatCount) {
-          console.log(proposition);
-          return proposition;
-        } else {
-          if (seats[i].reserved === false) {
-            proposition.push(seats[i].id);
-          }
-        }
-      }
-    }
-  };
-
   const allSeats = createIterator().map((cords) => {
     let key = cords.x.toString() + cords.y.toString();
     const realSeat = findByCords(cords.x, cords.y);
     if (Object.entries(realSeat).length > 0) {
-      return (
-        <SeatComponent
-          key={realSeat.id}
-          id={realSeat.id}
-          visible={true}
-          reserved={realSeat.reserved}
-          setReservedSeats={setReservedSeats}
-          reservedSeats={reservedSeats}
-        />
-      );
+      if (initialReservation.includes(realSeat.id)) {
+        return (
+          <SeatComponent
+            key={realSeat.id}
+            id={realSeat.id}
+            visible={true}
+            reserved={realSeat.reserved}
+            isSelected={true}
+          />
+        );
+      } else {
+        return (
+          <SeatComponent
+            key={realSeat.id}
+            id={realSeat.id}
+            visible={true}
+            reserved={realSeat.reserved}
+          />
+        );
+      }
     } else {
       return (
         <SeatComponent
@@ -124,7 +100,7 @@ const SeatsWrapper = () => {
   return (
     <Box className="window">
       <Box className="seats-wrapper">{seats ? allSeats : 0}</Box>
-      <BottomActionBar selectedSeats={reservedSeats} />
+      <BottomActionBar selectedSeats={initialReservation} />
     </Box>
   );
 };

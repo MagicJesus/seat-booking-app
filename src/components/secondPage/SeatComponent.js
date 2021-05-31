@@ -1,29 +1,34 @@
 import React, { useState } from "react";
 import { Box } from "@chakra-ui/react";
 import "../../styles/seats.css";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setInitialReservation } from "../../actions";
+
 const SeatComponent = (props) => {
+  const dispatch = useDispatch();
   const [selected, setSelected] = useState(
     props.isSelected ? props.isSelected : false
   );
 
   const seatCount = useSelector((state) => state.seatCount);
+  const reservation = useSelector(
+    (state) => state.initialReservation.reservation
+  );
 
   function handleUnselect() {
-    const indexOf = props.reservedSeats.indexOf(props.id);
-    const remainder = [...props.reservedSeats];
+    const indexOf = reservation.indexOf(props.id);
+    const remainder = [...reservation];
     remainder.splice(indexOf, 1);
     setSelected(!selected);
-    props.setReservedSeats(remainder);
-    console.log(props.reservedSeats);
+    dispatch(setInitialReservation(remainder));
   }
 
   function handleSelect() {
-    if (props.reservedSeats.length === seatCount) {
-      window.alert("Wybierz tyle miejsc ile zadeklarowaleś");
+    if (reservation.length === seatCount) {
+      window.alert("Wybierz tyle miejsc ile zadeklarowałeś!");
     } else {
       setSelected(!selected);
-      props.setReservedSeats([...props.reservedSeats, props.id]);
+      dispatch(setInitialReservation([...reservation, props.id]));
     }
   }
 

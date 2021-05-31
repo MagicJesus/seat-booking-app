@@ -1,4 +1,6 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import {
   Flex,
   Spacer,
@@ -9,7 +11,13 @@ import {
   Center,
 } from "@chakra-ui/react";
 
-const BottomActionBar = ({ selectedSeats }) => {
+const BottomActionBar = () => {
+  const history = useHistory();
+  const reservationLength = useSelector(
+    (state) => state.initialReservation.reservation
+  );
+  const seatCount = useSelector((state) => state.seatCount);
+
   return (
     <Flex height="10%">
       <Spacer />
@@ -30,7 +38,19 @@ const BottomActionBar = ({ selectedSeats }) => {
       </Center>
       <Spacer />
       <Center>
-        <Button onClick={() => window.alert(selectedSeats)}>
+        <Button
+          onClick={() => {
+            if (reservationLength.length < seatCount) {
+              const alert =
+                "Proszę wybrać jeszcze: " +
+                (seatCount - reservationLength.length).toString() +
+                " miejsc(a)";
+              window.alert(alert);
+            } else {
+              history.push("/reservationComplete");
+            }
+          }}
+        >
           Zarezerwuj miejsca
         </Button>
       </Center>

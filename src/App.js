@@ -4,6 +4,7 @@ import * as React from "react";
 import FormWrapper from "./components/firstPage/FormWrapper";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import SeatsWrapper from "./components/secondPage/SeatsWrapper";
+import ReservationCompletePage from "./components/thirdPage/ReservationCompletePage.js";
 
 function App() {
   return (
@@ -13,6 +14,9 @@ function App() {
           <Switch>
             <Route path="/seats">
               <SeatsWrapper />
+            </Route>
+            <Route path="/reservationComplete">
+              <ReservationCompletePage />
             </Route>
             <Route path="/">
               <FormWrapper />
